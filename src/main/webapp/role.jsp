@@ -1,6 +1,7 @@
 <%@ page import="com.edu.iuh.fit.week1.models.Role" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.edu.iuh.fit.week1.models.Account" %><%--
+<%@ page import="com.edu.iuh.fit.week1.models.Account" %>
+<%@ page import="com.edu.iuh.fit.week1.models.Logs" %><%--
   Created by IntelliJ IDEA.
   User: Admin
   Date: 9/12/2023
@@ -30,6 +31,13 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
+<%
+    String url = request.getScheme() +"://"
+            +request.getServerName() + ":"
+            +request.getServerPort()
+            +request.getContextPath();
+    Logs log = (Logs) request.getSession().getAttribute("logs");
+%>
 <div class="container">
     <div class="row">
         <div class="col-2">
@@ -37,14 +45,14 @@
                 <div class="container-fluid">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <%--to week1/login--%>
-                            <a class="nav-link" href="#">Home</a>
+                        <li>
+                            <a href="<%=url%>/week1?action=home">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="role.jsp">Role</a>
+                        <li>
+                            <a href="<%=url%>/week1?action=role">Role</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="log.jsp">Log</a>
+                        <li>
+                            <a href="<%=url%>/week1?action=log">Log</a>
                         </li>
                     </ul>
                 </div>
@@ -55,6 +63,9 @@
                 List<Account> accounts = (List<Account>) request.getAttribute("accounts");
                 List<Role> roles = (List<Role>) request.getAttribute("roles");
                 String roleName = (String) request.getAttribute("role-name");
+                if(roleName == null){
+                    roleName = "ADMIN";
+                }
             %>
 
             <select class="form-select" aria-label="Default select example" id="roles" name="roles">
@@ -78,21 +89,24 @@
                 </tr>
                 </thead>
                 <%
-                    for(Account account: accounts){
+                    for(Account acc: accounts){
                 %>
                 <tr>
-                    <td><%=account.getFullName()%>
+                    <td><%=acc.getFullName()%>
                     </td>
-                    <td><%=account.getEmail()%>
+                    <td><%=acc.getEmail()%>
                     </td>
-                    <td><%=account.getPhone()%>
+                    <td><%=acc.getPhone()%>
                     </td>
-                    <td><%=account.getStatus()%>
+                    <td><%=acc.getStatus()%>
                 </tr>
                 <%
                     }
                 %>
             </table>
+        </div>
+        <div class="col-2">
+            <a href="<%=url%>/week1?action=log-out" type="submit" class="btn btn-primary">Log Out</a>
         </div>
     </div>
     <script>

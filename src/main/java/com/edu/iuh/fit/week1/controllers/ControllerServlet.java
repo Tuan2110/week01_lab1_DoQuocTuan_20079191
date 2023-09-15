@@ -2,17 +2,20 @@ package com.edu.iuh.fit.week1.controllers;
 
 import java.io.*;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import com.edu.iuh.fit.week1.models.*;
 import com.edu.iuh.fit.week1.repositories.AccountRepository;
 import com.edu.iuh.fit.week1.repositories.GrantAccessRepository;
+import com.edu.iuh.fit.week1.repositories.LogRepository;
 import com.edu.iuh.fit.week1.repositories.RoleRepository;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import jakarta.websocket.Session;
 
 @WebServlet(name = "controllerServlet", value = "/week1")
 public class ControllerServlet extends HttpServlet {
@@ -20,9 +23,30 @@ public class ControllerServlet extends HttpServlet {
     private final AccountRepository accountRepository = new AccountRepository();
     private final GrantAccessRepository grantAccessRepository = new GrantAccessRepository();
     private final RoleRepository roleRepository = new RoleRepository();
+
+    private final LogRepository logRepository = new LogRepository();
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String action = request.getParameter("action");
-        if(action.equals("role")){
+        if(action.equals("home")){
+            try {
+                request.setAttribute("accounts",accountRepository.getAllAccount());
+                request.setAttribute("grantAccesses",grantAccessRepository.getAllGranAccesses());
+                request.setAttribute("roles",roleRepository.getAllRoles());
+            } catch (SQLException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            RequestDispatcher rd = getServletContext().getRequestDispatcher("/index.jsp");
+            rd.forward(request, response);
+        }else if(action.equals("log")){
+            try {
+                request.setAttribute("accounts",accountRepository.getAllAccount());
+                request.setAttribute("logs",logRepository.getAllLogs());
+            } catch (SQLException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            RequestDispatcher rd = getServletContext().getRequestDispatcher("/log.jsp");
+            rd.forward(request, response);
+        }else if(action.equals("role")){
             String url = "";
             url = "/role.jsp";
             try {
@@ -47,6 +71,15 @@ public class ControllerServlet extends HttpServlet {
             }
             RequestDispatcher rd = getServletContext().getRequestDispatcher(url);
             rd.forward(request, response);
+        }else if(action.equals("log-out")){
+            HttpSession session = request.getSession();
+            int id = Integer.parseInt(request.getParameter("log-id"));
+            try {
+                logRepository.updateLog(new Logs(id,null,LocalDateTime.MIN,LocalDateTime.now(),"Offline"));
+                session.invalidate();
+            } catch (SQLException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }
@@ -154,16 +187,18 @@ public class ControllerServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String url = "";
-        try {
-            if(accountRepository.login(email,password).isPresent()){
-                url = "/index.jsp";
-            }else {
-                url = "/login.jsp";
-                request.setAttribute("error","Email or password is incorrect");
-            }
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+        Optional<Account> account = accountRepository.login(email,password);
+        if(account.isPresent()){
+            url = "/index.jsp";
+        }else {
+            url = "/login.jsp";
+            request.setAttribute("error","Email or password is incorrect");
         }
+        Logs log = new Logs(account.get(), LocalDateTime.now(),LocalDateTime.MIN,"Online");
+        logRepository.insertLog(log);
+        HttpSession session = request.getSession();
+        session.setAttribute("logs",log);
+        System.out.println(log);
         request.setAttribute("accounts",accountRepository.getAllAccount());
         request.setAttribute("grantAccesses",grantAccessRepository.getAllGranAccesses());
         request.setAttribute("roles",roleRepository.getAllRoles());

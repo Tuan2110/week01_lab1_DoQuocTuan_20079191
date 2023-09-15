@@ -3,6 +3,8 @@
 <%@ page import="com.edu.iuh.fit.week1.repositories.RoleRepository" %>
 <%@ page import="com.edu.iuh.fit.week1.models.Role" %>
 <%@ page import="com.edu.iuh.fit.week1.models.GrantAccess" %>
+<%@ page import="org.apache.commons.logging.Log" %>
+<%@ page import="com.edu.iuh.fit.week1.models.Logs" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -26,6 +28,7 @@
             +request.getServerName() + ":"
             +request.getServerPort()
             +request.getContextPath();
+    Logs log = (Logs) session.getAttribute("logs");
 %>
 <div class="container">
     <div class="row">
@@ -34,17 +37,14 @@
                 <div class="container-fluid">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                        <%--to week1/login--%>
-                            <a class="nav-link" href="#">Home</a>
+                        <li>
+                            <a href="<%=url%>/week1?action=home">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <form action="week1" method="GET">
-                                <input type="hidden" name="action" value="role">
-                                <button type="submit" class="btn btn-link">Role</button>
-                            </form>
+                        <li>
+                            <a href="<%=url%>/week1?action=role">Role</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="log.jsp">Log</a>
+                        <li>
+                            <a href="<%=url%>/week1?action=log">Log</a>
                         </li>
                     </ul>
                 </div>
@@ -63,20 +63,20 @@
                 </tr>
                 </thead>
                 <%
-                    for(Account account: accounts){
+                    for(Account acc: accounts){
                 %>
                 <tr>
-                    <td><%=account.getFullName()%>
+                    <td><%=acc.getFullName()%>
                     </td>
-                    <td><%=account.getEmail()%>
+                    <td><%=acc.getEmail()%>
                     </td>
-                    <td><%=account.getPhone()%>
+                    <td><%=acc.getPhone()%>
                     </td>
-                    <td><%=account.getStatus()%>
+                    <td><%=acc.getStatus()%>
                     </td>
                     <td><%
                         for (GrantAccess grantAccess : grantAccesses){
-                            if(grantAccess.getAccount().getAccountId() == account.getAccountId()){
+                            if(grantAccess.getAccount().getAccountId() == acc.getAccountId()){
                                 for (Role role : roles){
                                     if(role.getRoleId() == grantAccess.getRole().getRoleId()){
                                         out.print(role.getRoleName() + " ");
@@ -87,8 +87,8 @@
                     %>
                     </td>
                     <td>
-                        <button class='btn btn-primary' onclick="update(<%=account.getAccountId()%>)">Update</button>
-                        <button class='btn btn-danger' onclick="deleteAccount(<%=account.getAccountId()%>)">Delete</button>
+                        <button class='btn btn-primary' onclick="update(<%=acc.getAccountId()%>)">Update</button>
+                        <button class='btn btn-danger' onclick="deleteAccount(<%=acc.getAccountId()%>)">Delete</button>
                     </td>
                 </tr>
                 <%
@@ -148,6 +148,10 @@
                 </div>
             </table>
         </div>
+        <h1><%=log%></h1>
+        <div class="col-2">
+            <a href="<%=url%>/week1?action=log-out&log-id" type="submit" class="btn btn-primary">Log Out</a>
+        </div>
     </div>
 </div>
 <div class="modal" id="deleteModel" tabindex="-1">
@@ -178,18 +182,18 @@
     }
     function update(accountId) {
         <%
-        for(Account account: accounts){
+        for(Account acc: accounts){
         %>
-            if(accountId === <%=account.getAccountId()%>) {
-                var fullName = "<%=account.getFullName()%>";
-                var email = "<%=account.getEmail()%>";
-                var phone = "<%=account.getPhone()%>";
-                var status = "<%=account.getStatus()%>";
+            if(accountId === <%=acc.getAccountId()%>) {
+                var fullName = "<%=acc.getFullName()%>";
+                var email = "<%=acc.getEmail()%>";
+                var phone = "<%=acc.getPhone()%>";
+                var status = "<%=acc.getStatus()%>";
                 var roles = "";
                 <%-- Lặp qua các role của tài khoản và lưu vào biến roles --%>
                 <%
                     for (GrantAccess grantAccess : grantAccesses){
-                        if(grantAccess.getAccount().getAccountId() == account.getAccountId()){
+                        if(grantAccess.getAccount().getAccountId() == acc.getAccountId()){
                             for (Role role : roles){
                                 if(role.getRoleId() == grantAccess.getRole().getRoleId()){
                                     out.println("roles += '" + role.getRoleName() + " ';");

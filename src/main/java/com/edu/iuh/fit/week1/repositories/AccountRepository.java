@@ -117,6 +117,36 @@ public class AccountRepository {
         }
         return Optional.empty();
     }
+    public Optional<Account> getAccountById(int id) throws SQLException, ClassNotFoundException {
+        Account account = null;
+        Connection con = ConnectDB.getInstance().getConnection();
+        PreparedStatement stm = null;
+        String sql = "Select * from account where account_id = ?";
+        try {
+            stm = con.prepareStatement(sql);
+            stm.setInt(1,id);
+            ResultSet rs = stm.executeQuery();
+            while(rs.next()) {
+                int accountId = rs.getInt(1);
+                String fullName = rs.getString(2);
+                String pass = rs.getString(3);
+                String em = rs.getString(4);
+                String phone = rs.getString(5);
+                Status status = Status.valueOf(rs.getString(6));
+                account = new Account(accountId,fullName,pass,em,phone,status);
+                return Optional.of(account);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                stm.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return Optional.empty();
+    }
     public List<Account> getAccountsByRole(String roleName) throws SQLException, ClassNotFoundException {
         List accounts = null;
         Connection con = ConnectDB.getInstance().getConnection();
@@ -197,110 +227,4 @@ public class AccountRepository {
         }
         return n>0;
     }
-//    public NhanVien getNhanVienTheoMa(String ma) {
-//        NhanVien nv= null;
-//        ConnectDB.getInstance();
-//        Connection con = ConnectDB.getConnection();
-//        PreparedStatement stm = null;
-//        String sql = "Select * from NhanVien where maNV = ?";
-//        try {
-//            stm = con.prepareStatement(sql);
-//            stm.setString(1,ma);
-//            ResultSet rs = stm.executeQuery();
-//            while(rs.next()) {
-//                String maNV = rs.getString(1);
-//                String ho = rs.getString(2);
-//                String ten = rs.getString(3);
-//                int tuoi = rs.getInt(4);
-//                boolean phai = rs.getBoolean(5);
-//                PhongBan pb = new PhongBan(rs.getString(6));
-//                double tienLuong = rs.getDouble(7);
-//                nv = new NhanVien(maNV, ho, ten, tuoi, phai, pb, tienLuong);
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }finally {
-//            try {
-//                stm.close();
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return nv;
-//    }
-//    public boolean themNhanVien(NhanVien nv) {
-//        ConnectDB.getInstance();
-//        Connection con = ConnectDB.getConnection();
-//        PreparedStatement stm = null;
-//        int n=0;
-//        String sql = "Insert into NhanVien values(?,?,?,?,?,?,?)";
-//        try {
-//            stm = con.prepareStatement(sql);
-//            stm.setString(1,nv.getMaNV());
-//            stm.setString(2,nv.getHo());
-//            stm.setString(3,nv.getTen());
-//            stm.setInt(4, nv.getTuoi());
-//            stm.setBoolean(5, nv.isPhai());
-//            stm.setString(6, nv.getPb().getMaPhong());
-//            stm.setDouble(7, nv.getTienLuong());
-//            n=stm.executeUpdate();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }finally {
-//            try {
-//                stm.close();
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return n>0;
-//    }
-//    public boolean suaNhanVien(NhanVien nv) {
-//        ConnectDB.getInstance();
-//        Connection con = ConnectDB.getConnection();
-//        PreparedStatement stm = null;
-//        int n=0;
-//        String sql = "Update NhanVien set ho = ?,ten=?,tuoi=?,phai=?,maPhong=?,tienLuong=? where maNV=?";
-//        try {
-//            stm = con.prepareStatement(sql);
-//            stm.setString(7,nv.getMaNV());
-//            stm.setString(1,nv.getHo());
-//            stm.setString(2,nv.getTen());
-//            stm.setInt(3, nv.getTuoi());
-//            stm.setBoolean(4, nv.isPhai());
-//            stm.setString(5, nv.getPb().getMaPhong());
-//            stm.setDouble(6, nv.getTienLuong());
-//            n=stm.executeUpdate();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }finally {
-//            try {
-//                stm.close();
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return n>0;
-//    }
-//    public boolean xoaNhanVien(String nv) {
-//        ConnectDB.getInstance();
-//        Connection con = ConnectDB.getConnection();
-//        PreparedStatement stm = null;
-//        int n=0;
-//        String sql = "Delete NhanVien where maNV=?";
-//        try {
-//            stm = con.prepareStatement(sql);
-//            stm.setString(1,nv);
-//            n=stm.executeUpdate();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }finally {
-//            try {
-//                stm.close();
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return n>0;
-//    }
 }

@@ -1,19 +1,32 @@
 package com.edu.iuh.fit.week1.models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Logs {
     private int id;
-    private int accountId;
-    private LocalDate loginTime;
-    private LocalDate logoutTime;
+    private Account account;
+    private LocalDateTime loginTime;
+    private LocalDateTime logoutTime;
     private String notes;
 
-    public Logs(int accountId, LocalDate loginTime, LocalDate logoutTime, String notes) {
-        this.accountId = accountId;
+    public Logs(int id, Account account, LocalDateTime loginTime, LocalDateTime logoutTime, String notes) {
+        this.id = id;
+        this.account = account;
         this.loginTime = loginTime;
         this.logoutTime = logoutTime;
         this.notes = notes;
+    }
+
+    public Logs(Account account, LocalDateTime loginTime, LocalDateTime logoutTime, String notes) {
+        this.account = account;
+        this.loginTime = loginTime;
+        this.logoutTime = logoutTime;
+        this.notes = notes;
+    }
+
+    public Logs(int id) {
+        this.id = id;
     }
 
     public Logs() {
@@ -27,27 +40,27 @@ public class Logs {
         this.id = id;
     }
 
-    public int getAccountId() {
-        return accountId;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
+    public void setAccount(Account accountId) {
+        this.account = accountId;
     }
 
-    public LocalDate getLoginTime() {
+    public LocalDateTime getLoginTime() {
         return loginTime;
     }
 
-    public void setLoginTime(LocalDate loginTime) {
+    public void setLoginTime(LocalDateTime loginTime) {
         this.loginTime = loginTime;
     }
 
-    public LocalDate getLogoutTime() {
+    public LocalDateTime getLogoutTime() {
         return logoutTime;
     }
 
-    public void setLogoutTime(LocalDate logoutTime) {
+    public void setLogoutTime(LocalDateTime logoutTime) {
         this.logoutTime = logoutTime;
     }
 
@@ -63,7 +76,7 @@ public class Logs {
     public String toString() {
         return "Logs{" +
                 "id=" + id +
-                ", accountId='" + accountId + '\'' +
+                ", account=" + account +
                 ", loginTime=" + loginTime +
                 ", logoutTime=" + logoutTime +
                 ", notes='" + notes + '\'' +
