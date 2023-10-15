@@ -11,6 +11,10 @@ import com.edu.iuh.fit.week1.repositories.AccountRepository;
 import com.edu.iuh.fit.week1.repositories.GrantAccessRepository;
 import com.edu.iuh.fit.week1.repositories.LogRepository;
 import com.edu.iuh.fit.week1.repositories.RoleRepository;
+import com.edu.iuh.fit.week1.services.AccountService;
+import com.edu.iuh.fit.week1.services.GrantAccessService;
+import com.edu.iuh.fit.week1.services.LogService;
+import com.edu.iuh.fit.week1.services.RoleService;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
@@ -20,97 +24,72 @@ import jakarta.websocket.Session;
 @WebServlet(name = "controllerServlet", value = "/week1")
 public class ControllerServlet extends HttpServlet {
 
-    private final AccountRepository accountRepository = new AccountRepository();
-    private final GrantAccessRepository grantAccessRepository = new GrantAccessRepository();
-    private final RoleRepository roleRepository = new RoleRepository();
+    private final AccountService accountService = new AccountService();
+    private final GrantAccessService grantAccessService = new GrantAccessService();
+    private final RoleService roleService = new RoleService();
 
-    private final LogRepository logRepository = new LogRepository();
+    private final LogService logService = new LogService();
+
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String action = request.getParameter("action");
-        if(action.equals("home")){
-            try {
-                request.setAttribute("accounts",accountRepository.getAllAccount());
-                request.setAttribute("grantAccesses",grantAccessRepository.getAllGranAccesses());
-                request.setAttribute("roles",roleRepository.getAllRoles());
-            } catch (SQLException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            RequestDispatcher rd = getServletContext().getRequestDispatcher("/index.jsp");
-            rd.forward(request, response);
-        }else if(action.equals("log")){
-            try {
-                request.setAttribute("accounts",accountRepository.getAllAccount());
-                request.setAttribute("logs",logRepository.getAllLogs());
-            } catch (SQLException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            RequestDispatcher rd = getServletContext().getRequestDispatcher("/log.jsp");
-            rd.forward(request, response);
-        }else if(action.equals("role")){
-            String url = "";
-            url = "/role.jsp";
-            try {
-                request.setAttribute("accounts",accountRepository.getAccountsByRole("ADMIN"));
-                request.setAttribute("roles",roleRepository.getAllRoles());
-            } catch (SQLException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            RequestDispatcher rd = getServletContext().getRequestDispatcher(url);
-            rd.forward(request, response);
-        }else if(action.equals("change-role")){
-            String url = "";
-            String accountId = request.getParameter("account-id");
-            String roleName = request.getParameter("role-name");
-            try {
+        try {
+            if (action.equals("home")) {
+                request.setAttribute("accounts", accountService.getAllAccount());
+                request.setAttribute("grantAccesses", grantAccessService.getAllGrantAccesses());
+                request.setAttribute("roles", roleService.getAllRoles());
+                RequestDispatcher rd = getServletContext().getRequestDispatcher("/index.jsp");
+                rd.forward(request, response);
+            } else if (action.equals("log")) {
+                request.setAttribute("accounts", accountService.getAllAccount());
+                request.setAttribute("logs", logService.getAllLogs());
+                RequestDispatcher rd = getServletContext().getRequestDispatcher("/log.jsp");
+                rd.forward(request, response);
+            } else if (action.equals("role")) {
+                String url = "";
                 url = "/role.jsp";
-                request.setAttribute("role-name",roleName);
-                request.setAttribute("accounts",accountRepository.getAccountsByRole(roleName));
-                request.setAttribute("roles",roleRepository.getAllRoles());
-            } catch (SQLException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            RequestDispatcher rd = getServletContext().getRequestDispatcher(url);
-            rd.forward(request, response);
-        }else if(action.equals("log-out")){
-            HttpSession session = request.getSession();
-            int id = Integer.parseInt(request.getParameter("log-id"));
-            try {
-                logRepository.updateLog(new Logs(id,null,LocalDateTime.MIN,LocalDateTime.now(),"Offline"));
+                request.setAttribute("accounts", accountService.getAccountsByRole("ADMIN"));
+                request.setAttribute("roles", roleService.getAllRoles());
+                RequestDispatcher rd = getServletContext().getRequestDispatcher(url);
+                rd.forward(request, response);
+            } else if (action.equals("change-role")) {
+                String url = "";
+                String accountId = request.getParameter("account-id");
+                String roleName = request.getParameter("role-name");
+                url = "/role.jsp";
+                request.setAttribute("role-name", roleName);
+                request.setAttribute("accounts", accountService.getAccountsByRole(roleName));
+                request.setAttribute("roles", roleService.getAllRoles());
+                RequestDispatcher rd = getServletContext().getRequestDispatcher(url);
+                rd.forward(request, response);
+            } else if (action.equals("log-out")) {
+                HttpSession session = request.getSession();
+                int id = Integer.parseInt(request.getParameter("log-id"));
+                logService.updateLog("LogOut", id, LocalDateTime.now());
                 session.invalidate();
-            } catch (SQLException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                String url = "/login.jsp";
+                RequestDispatcher rd = getServletContext().getRequestDispatcher(url);
+                rd.forward(request, response);
             }
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
-
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        if(action.equals("login")){
-            try {
-                login(request,response);
-            } catch (SQLException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }else if(action.equals("register")){
-            try {
-                register(request,response);
-            } catch (SQLException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }else if(action.equals("update-account")){
-            try {
-                updateAccount(request,response);
-            } catch (SQLException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }else if(action.equals("delete-account")) {
-            try {
+        try {
+            if (action.equals("login")) {
+                login(request, response);
+            } else if (action.equals("register")) {
+                register(request, response);
+            } else if (action.equals("update-account")) {
+                updateAccount(request, response);
+            } else if (action.equals("delete-account")) {
                 deleteAccount(request, response);
-            } catch (SQLException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
             }
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -118,46 +97,46 @@ public class ControllerServlet extends HttpServlet {
         String accountId = request.getParameter("account-id-delete");
         String url = "";
         try {
-            if(accountRepository.deleteAccount(Integer.parseInt(accountId))){
+            if (accountService.deleteAccount(Integer.parseInt(accountId))) {
                 url = "/index.jsp";
             }
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        request.setAttribute("accounts",accountRepository.getAllAccount());
-        request.setAttribute("grantAccesses",grantAccessRepository.getAllGranAccesses());
-        request.setAttribute("roles",roleRepository.getAllRoles());
+        request.setAttribute("accounts", accountService.getAllAccount());
+        request.setAttribute("grantAccesses", grantAccessService.getAllGrantAccesses());
+        request.setAttribute("roles", roleService.getAllRoles());
         RequestDispatcher rd = getServletContext().getRequestDispatcher(url);
         rd.forward(request, response);
     }
 
     private void updateAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, ClassNotFoundException {
-            String accountId = request.getParameter("account-id");
-            String fullName = request.getParameter("full-name");
-            String email = request.getParameter("email");
-            String phone = request.getParameter("phone");
-            String status = request.getParameter("status");
-            String[] roles = request.getParameterValues("role");
-            String url = "";
-            try {
-                Account account = new Account(Integer.parseInt(accountId),fullName,null,email,phone, Status.valueOf(status));
-                if(accountRepository.updateAccount(account)){
-                    url = "/index.jsp";
-                }
-                grantAccessRepository.deleteGrantAccessByAcId(Integer.parseInt(accountId));
-                if(roles!=null) {
-                    for (String roleName : roles) {
-                        Optional<Role> role = roleRepository.getRoleByName(roleName);
-                        grantAccessRepository.insertGrantAccess(new GrantAccess(role.get(), account, Grant.ENABLE, ""));
-                    }
-                }
-
-            } catch (SQLException | ClassNotFoundException e) {
-                e.printStackTrace();
+        String accountId = request.getParameter("account-id");
+        String fullName = request.getParameter("full-name");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String status = request.getParameter("status");
+        String[] roles = request.getParameterValues("role");
+        String url = "";
+        try {
+            Account account = new Account(Integer.parseInt(accountId), fullName, null, email, phone, Status.valueOf(status));
+            if (accountService.updateAccount(account)) {
+                url = "/index.jsp";
             }
-        request.setAttribute("accounts",accountRepository.getAllAccount());
-        request.setAttribute("grantAccesses",grantAccessRepository.getAllGranAccesses());
-        request.setAttribute("roles",roleRepository.getAllRoles());
+            grantAccessService.deleteGrantAccessByAcId(Integer.parseInt(accountId));
+            if (roles != null) {
+                for (String roleName : roles) {
+                    Optional<Role> role = roleService.getRoleByName(roleName);
+                    grantAccessService.insertGrantAccess(new GrantAccess(role.get(), account, Grant.ENABLE, ""));
+                }
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        request.setAttribute("accounts", accountService.getAllAccount());
+        request.setAttribute("grantAccesses", grantAccessService.getAllGrantAccesses());
+        request.setAttribute("roles", roleService.getAllRoles());
         RequestDispatcher rd = getServletContext().getRequestDispatcher(url);
         rd.forward(request, response);
     }
@@ -168,16 +147,39 @@ public class ControllerServlet extends HttpServlet {
         String fullName = request.getParameter("full-name");
         String phone = request.getParameter("phone");
         String cfPassword = request.getParameter("confirm-password");
+
+        request.setAttribute("email", email);
+        request.setAttribute("password", password);
+        request.setAttribute("full-name", fullName);
+        request.setAttribute("phone", phone);
+        request.setAttribute("cf-password", cfPassword);
         String url = "";
-        if(!password.equals(cfPassword)){
+        boolean error = false;
+        if (!password.equals(cfPassword)) {
+            request.setAttribute("error-cf-pw", "Password and confirm password is not match");
+            error = true;
+        }
+        if (accountService.getAccountByEmail(email).isPresent()) {
+            error = true;
+            request.setAttribute("error-email", "Email is already exist");
+        }
+        if (!email.matches("\\w+@\\w+(\\.\\w+)+")) {
+            error = true;
+            request.setAttribute("error-email", "Email is not valid");
+        }
+        if (!fullName.matches("[a-zA-Z ]+")) {
+            error = true;
+            request.setAttribute("error-full-name", "Full name must contain only letters");
+        }
+        if (!phone.matches("\\d{10}")) {
+            error = true;
+            request.setAttribute("error-phone", "Phone must contain 10 digits");
+        }
+        if (error) {
             url = "/signup.jsp";
-            request.setAttribute("error","Password and confirm password is not match");
-        }else if(accountRepository.getAccountByEmail(email).isPresent()){
-            url = "/signup.jsp";
-            request.setAttribute("error","Email is already exist");
-        }else{
+        } else {
             url = "/login.jsp";
-            accountRepository.insertAccount(new Account(fullName,password,email,phone, Status.DELETED));
+            accountService.insertAccount(new Account(fullName, password, email, phone, Status.ACTIVE));
         }
         RequestDispatcher rd = getServletContext().getRequestDispatcher(url);
         rd.forward(request, response);
@@ -186,22 +188,24 @@ public class ControllerServlet extends HttpServlet {
     private void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, ClassNotFoundException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String url = "";
-        Optional<Account> account = accountRepository.login(email,password);
-        if(account.isPresent()){
-            url = "/index.jsp";
-        }else {
-            url = "/login.jsp";
-            request.setAttribute("error","Email or password is incorrect");
-        }
-        Logs log = new Logs(account.get(), LocalDateTime.now(),LocalDateTime.MIN,"Online");
-        logRepository.insertLog(log);
         HttpSession session = request.getSession();
-        session.setAttribute("logs",log);
-        System.out.println(log);
-        request.setAttribute("accounts",accountRepository.getAllAccount());
-        request.setAttribute("grantAccesses",grantAccessRepository.getAllGranAccesses());
-        request.setAttribute("roles",roleRepository.getAllRoles());
+        String url = "";
+        Optional<Account> account = accountService.login(email, password);
+        if (account.isPresent()) {
+            session.setAttribute("account", account.get());
+            Logs log = new Logs(account.get(), LocalDateTime.now(), null, "Online");
+            logService.insertLog(log);
+            session.setAttribute("log_id", logService.getLogId(account.get().getAccountId(), "Online"));
+            url = "/index.jsp";
+        } else {
+            url = "/login.jsp";
+            request.setAttribute("error", "Email or password is incorrect");
+            request.setAttribute("value_email", email);
+            request.setAttribute("value_password", password);
+        }
+        request.setAttribute("accounts", accountService.getAllAccount());
+        request.setAttribute("grantAccesses", grantAccessService.getAllGrantAccesses());
+        request.setAttribute("roles", roleService.getAllRoles());
         RequestDispatcher rd = getServletContext().getRequestDispatcher(url);
         rd.forward(request, response);
     }

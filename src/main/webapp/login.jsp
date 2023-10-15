@@ -30,6 +30,8 @@
     %>
     <%
         String error = request.getAttribute("error") == null ? "" : (String) request.getAttribute("error");
+        String value_email = request.getAttribute("value_email") == null ? "" : (String) request.getAttribute("value_email");
+        String value_password = request.getAttribute("value_password") == null ? "" : (String) request.getAttribute("value_password");
     %>
     <section class="vh-100 bg-image"
              style="background-image: url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp');">
@@ -47,12 +49,12 @@
                                 </h3>
                                 <form action="week1" method="POST">
                                     <div class="form-outline mb-4">
-                                        <input type="email" id="email" name="email" class="form-control form-control-lg" />
+                                        <input type="email" id="email" name="email" class="form-control form-control-lg" value="<%=value_email%>"/>
                                         <label class="form-label" for="email">Email</label>
                                     </div>
 
                                     <div class="form-outline mb-4">
-                                        <input type="password" id="password" name="password" class="form-control form-control-lg" />
+                                        <input type="password" id="password" name="password" class="form-control form-control-lg" value="<%=value_password%>" />
                                         <label class="form-label" for="password">Password</label>
                                     </div>
 

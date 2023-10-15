@@ -17,6 +17,12 @@ public class Logs {
         this.logoutTime = logoutTime;
         this.notes = notes;
     }
+    public Logs(int id, Account account, LocalDateTime loginTime, String notes) {
+        this.id = id;
+        this.account = account;
+        this.loginTime = loginTime;
+        this.notes = notes;
+    }
 
     public Logs(Account account, LocalDateTime loginTime, LocalDateTime logoutTime, String notes) {
         this.account = account;

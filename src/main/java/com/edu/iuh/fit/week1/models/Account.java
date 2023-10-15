@@ -2,6 +2,8 @@ package com.edu.iuh.fit.week1.models;
 
 import com.edu.iuh.fit.week1.repositories.AccountRepository;
 
+import java.util.List;
+
 public class Account {
     private int accountId;
     private String fullName;

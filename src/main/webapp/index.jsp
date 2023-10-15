@@ -22,13 +22,14 @@
 <body>
 <%
     List<Account> accounts = (List<Account>) request.getAttribute("accounts");
+    Account account = (Account) session.getAttribute("account");
     List<Role> roles = (List<Role>) request.getAttribute("roles");
     List<GrantAccess> grantAccesses = (List<GrantAccess>) request.getAttribute("grantAccesses");
     String url = request.getScheme() +"://"
             +request.getServerName() + ":"
             +request.getServerPort()
             +request.getContextPath();
-    Logs log = (Logs) session.getAttribute("logs");
+    int log_id = (int) session.getAttribute("log_id");
 %>
 <div class="container">
     <div class="row">
@@ -50,33 +51,27 @@
                 </div>
             </nav>
         </div>
-        <div class="col-8">
-            <h1>Account Management</h1>
-            <table class="table table-striped">
-                <thead class="thead-dark">
-                <tr>
-                    <th>Full Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Status</th>
-                    <th>Roles</th>
-                </tr>
-                </thead>
-                <%
-                    for(Account acc: accounts){
-                %>
-                <tr>
-                    <td><%=acc.getFullName()%>
-                    </td>
-                    <td><%=acc.getEmail()%>
-                    </td>
-                    <td><%=acc.getPhone()%>
-                    </td>
-                    <td><%=acc.getStatus()%>
-                    </td>
-                    <td><%
+        <%
+            for (GrantAccess grantAccess1 : grantAccesses){
+                if(grantAccess1.getAccount().getAccountId() == account.getAccountId()){
+                    for (Role role1 : roles){
+                        if(role1.getRoleId() == grantAccess1.getRole().getRoleId()){
+                            if(role1.getRoleName().equals("ADMIN")){
+        %>
+            <jsp:include page="dashboard.jsp"></jsp:include>
+        <%
+                            }else if(role1.getRoleName().equals("USER")){
+        %>
+            <div class="col-8">
+            <h1>User Information</h1>
+                <p><b>Full name :</b> <%=account.getFullName()%> </p>
+                <p><b>Email :</b> <%=account.getEmail()%></p>
+                <p><b>Phone :</b> <%=account.getPhone()%></p>
+                <p><b>Status :</b> <%=account.getStatus()%></p>
+                <p><b>Role :</b>
+                    <%
                         for (GrantAccess grantAccess : grantAccesses){
-                            if(grantAccess.getAccount().getAccountId() == acc.getAccountId()){
+                            if(grantAccess.getAccount().getAccountId() == account.getAccountId()){
                                 for (Role role : roles){
                                     if(role.getRoleId() == grantAccess.getRole().getRoleId()){
                                         out.print(role.getRoleName() + " ");
@@ -85,72 +80,19 @@
                             }
                         }
                     %>
-                    </td>
-                    <td>
-                        <button class='btn btn-primary' onclick="update(<%=acc.getAccountId()%>)">Update</button>
-                        <button class='btn btn-danger' onclick="deleteAccount(<%=acc.getAccountId()%>)">Delete</button>
-                    </td>
-                </tr>
-                <%
+                </p>
+            </div>
+        <%
+                            }
+                        }
                     }
-                %>
-                <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3 class="modal-title" id="accountModalLabel">Account Information</h3>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="week1" method="post">
-                                    <input type="hidden" name="account-id" id="account-id">
-                                    <div class="mb-3">
-                                        <label for="full-name" class="form-label">Full Name</label>
-                                        <input type="text" class="form-control" id="full-name" name="full-name" placeholder="Full Name">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="Email">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="phone" class="form-label">Phone</label>
-                                        <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="status" class="form-label">Status</label>
-                                        <select class="form-select" aria-label="Default select example" id="status" name="status">
-                                            <option value="ACTIVE">ACTIVE</option>
-                                            <option value="DEACTIVE">DEACTIVE</option>
-                                            <option value="DELETED">DELETED</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="role" class="form-label">Role</label>
-                                        <%
-                                            for(Role role : roles){
-                                        %>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="<%=role.getRoleName()%>" id="role" name="role">
-                                            <label class="form-check-label" for="role">
-                                                <%=role.getRoleName()%>
-                                            </label>
-                                        </div>
-                                        <%
-                                            }
-                                        %>
-                                    </div>
-                                    <input type="hidden" name="action" value="update-account">
-                                    <button type="submit" class="btn btn-primary">Save</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </table>
-        </div>
-        <h1><%=log%></h1>
+                }
+            }
+        %>
         <div class="col-2">
-            <a href="<%=url%>/week1?action=log-out&log-id" type="submit" class="btn btn-primary">Log Out</a>
+            <p><b><%=account.getFullName()%></b></p>
+            <p><%=log_id%></p>
+            <a href="<%=url%>/week1?action=log-out&log-id=<%=log_id%>" type="submit" class="btn btn-primary">Log Out</a>
         </div>
     </div>
 </div>

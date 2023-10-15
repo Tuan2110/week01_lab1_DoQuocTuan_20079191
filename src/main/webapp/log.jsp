@@ -1,6 +1,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.edu.iuh.fit.week1.models.Account" %>
-<%@ page import="com.edu.iuh.fit.week1.models.Logs" %><%--
+<%@ page import="com.edu.iuh.fit.week1.models.Logs" %>
+<%@ page import="java.time.LocalDateTime" %><%--
   Created by IntelliJ IDEA.
   User: Admin
   Date: 9/12/2023
@@ -35,7 +36,8 @@
             +request.getServerName() + ":"
             +request.getServerPort()
             +request.getContextPath();
-    Logs logg = (Logs) request.getSession().getAttribute("logs");
+    Account account = (Account) session.getAttribute("account");
+    int log_id = (int) session.getAttribute("log_id");
 %>
 <div class="container">
     <div class="row">
@@ -78,8 +80,16 @@
                 %>
                 <tr>
                     <td><%= accountLog.getFullName() %></td>
-                    <td><%= log.getLoginTime() %></td>
-                    <td><%= log.getLogoutTime() %></td>
+                    <td><% LocalDateTime loginTime = log.getLoginTime(); %>
+                        <%= loginTime.getHour() +":"+loginTime.getMinute()+" "+ loginTime.getDayOfMonth()+":"+loginTime.getMonth().getValue()+":"+loginTime.getYear() %>
+                    </td>
+                    <td>
+                        <% LocalDateTime logoutTime = log.getLogoutTime(); %>
+                        <%if(logoutTime!=null){%>
+                            <%= logoutTime.getHour() +":"+logoutTime.getMinute()+" "+ logoutTime.getDayOfMonth()+":"+logoutTime.getMonth().getValue()+":"+logoutTime.getYear() %>
+                        <%}else{%>
+                            <%}%>
+                    </td>
                     <td><%= log.getNotes() %></td>
                 </tr>
                 <%
@@ -88,7 +98,8 @@
             </table>
         </div>
         <div class="col-2">
-            <a href="<%=url%>/week1?action=log-out" type="submit" class="btn btn-primary">Log Out</a>
+            <p><b><%=account.getFullName()%></b></p>
+            <a href="<%=url%>/week1?action=log-out&log-id=<%=log_id%>" type="submit" class="btn btn-primary">Log Out</a>
         </div>
     </div>
 </div>

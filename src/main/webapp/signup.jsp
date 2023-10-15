@@ -14,10 +14,24 @@
           rel="stylesheet"
           integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT"
           crossorigin="anonymous">
+  <style>
+    .err {
+      color: red;
+    }
+  </style>
 </head>
 <body>
 <%
-  String error = request.getAttribute("error") == null ? "" : (String) request.getAttribute("error");
+  String errorCfPw = request.getAttribute("error-cf-pw") == null ? "" : (String) request.getAttribute("error-cf-pw");
+  String errorEmail = request.getAttribute("error-email") == null ? "" : (String) request.getAttribute("error-email");
+  String errorPhone = request.getAttribute("error-phone") == null ? "" : (String) request.getAttribute("error-phone");
+  String errorFullName = request.getAttribute("error-full-name") == null ? "" : (String) request.getAttribute("error-full-name");
+
+  String email = request.getAttribute("email") == null ? "" : (String) request.getAttribute("email");
+  String phone = request.getAttribute("phone") == null ? "" : (String) request.getAttribute("phone");
+  String fullName = request.getAttribute("full-name") == null ? "" : (String) request.getAttribute("full-name");
+  String password = request.getAttribute("password") == null ? "" : (String) request.getAttribute("password");
+  String cfPassword = request.getAttribute("cf-password") == null ? "" : (String) request.getAttribute("cf-password");
 %>
 <section class="vh-100 bg-image"
          style="background-image: url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp');">
@@ -28,32 +42,31 @@
           <div class="card" style="border-radius: 15px;">
             <div class="card-body p-5">
               <h2 class="text-uppercase text-center mb-5">Create an account</h2>
-              <h3>
-                <%=
-                  error
-                %>
-              </h3>
               <form action="week1" method="POST">
 
                 <div class="form-outline mb-4">
-                  <input type="text" id="full-name" name="full-name" class="form-control form-control-lg" />
+                  <b class="err"><%=errorFullName%></b>
+                  <input type="text" id="full-name" name="full-name" class="form-control form-control-lg" value="<%=fullName%>" />
                   <label class="form-label" for="full-name">Full Name</label>
                 </div>
                 <div class="form-outline mb-4">
-                  <input type="text" id="phone" name="phone" class="form-control form-control-lg" />
+                  <b class="err"><%=errorPhone%></b>
+                  <input type="text" id="phone" name="phone" class="form-control form-control-lg" value="<%=phone%>" />
                   <label class="form-label" for="phone">Phone</label>
                 </div>
                 <div class="form-outline mb-4">
-                  <input type="email" id="email" name="email" class="form-control form-control-lg" />
+                  <b class="err"><%=errorEmail%></b>
+                  <input type="email" id="email" name="email" class="form-control form-control-lg" value="<%=email%>" />
                   <label class="form-label" for="email">Email</label>
                 </div>
                 <div class="form-outline mb-4">
-                  <input type="password" id="password" name="password" class="form-control form-control-lg" />
+                  <input type="password" id="password" name="password" class="form-control form-control-lg" value="<%=password%>"/>
                   <label class="form-label" for="password">Password</label>
                 </div>
 
                 <div class="form-outline mb-4">
-                  <input type="password" id="confirm-password" name="confirm-password" class="form-control form-control-lg" />
+                  <b class="err"><%=errorCfPw%></b>
+                  <input type="password" id="confirm-password" name="confirm-password" class="form-control form-control-lg" value="<%=cfPassword%>"/>
                   <label class="form-label" for="confirm-password">Confirm Password</label>
                 </div>
 

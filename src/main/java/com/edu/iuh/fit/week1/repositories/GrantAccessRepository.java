@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class GrantAccessRepository {
-    public ArrayList<GrantAccess> getAllGranAccesses() throws SQLException, ClassNotFoundException {
+    public ArrayList<GrantAccess> getAllGrantAccesses() throws SQLException, ClassNotFoundException {
         ArrayList<GrantAccess> grantAccesses = null;
         Connection con = ConnectDB.getInstance().getConnection();
         String sql = "SELECT * from grant_access";

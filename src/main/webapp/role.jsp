@@ -37,6 +37,8 @@
             +request.getServerPort()
             +request.getContextPath();
     Logs log = (Logs) request.getSession().getAttribute("logs");
+    Account account = (Account) session.getAttribute("account");
+    int log_id = (int) session.getAttribute("log_id");
 %>
 <div class="container">
     <div class="row">
@@ -106,7 +108,8 @@
             </table>
         </div>
         <div class="col-2">
-            <a href="<%=url%>/week1?action=log-out" type="submit" class="btn btn-primary">Log Out</a>
+            <p><b><%=account.getFullName()%></b></p>
+            <a href="<%=url%>/week1?action=log-out&log-id=<%=log_id%>" type="submit" class="btn btn-primary">Log Out</a>
         </div>
     </div>
     <script>
