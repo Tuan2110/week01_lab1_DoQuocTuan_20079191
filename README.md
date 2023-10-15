@@ -38,7 +38,7 @@
     <img src="result/delete2.png"/>
   - Sau khi xóa
     <img src="result/delete3.png"/>
-<b>4.Hiển thị quyền và cấp quyền cho account</b>
+<b>4.Hiển thị quyền và cấp quyền cho account</b><br/>
   - Hiển thị quyền của account : các quyền của 1 account được hiển thị ở cột roles
     <img src="result/role1.png"/>
   - Cấp quyền cho account : tích vào các quyền muốn cấp và lưu
