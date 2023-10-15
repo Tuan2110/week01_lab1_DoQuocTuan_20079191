@@ -25,6 +25,7 @@
   - Đăng ký thành công sẽ chuyển đến trang đăng nhập
   <br/>
 <b>3.Sửa ,xóa account</b>
+<br/>
   - Trước khi sửa (Dang Van Manh)
     <img src="result/edit1.png"/>
   - Form sửa
@@ -45,6 +46,7 @@
   - Cấp quyền thành công
     <img src="result/role3.png"/>
 <b>5.Hiển thị các account của 1 role</b>
+<br/>
   - Role ADMIN
     <img src="result/role4.png"/>
   - Role USER
