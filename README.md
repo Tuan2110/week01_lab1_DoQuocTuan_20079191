@@ -51,7 +51,7 @@
     <img src="result/role4.png"/>
   - Role USER
     <img src="result/role5.png"/>
-<b>6.Ghi log mỗi lần account đăng nhập,đăng xuất</b>
+<b>6.Ghi log mỗi lần account đăng nhập,đăng xuất</b><br/>
   - Đăng nhập sẽ có Login Time và Trạng Thái Online
     <img src="result/log1.png"/>
   - Đăng xuất sẽ có Logout Time và Trạng Thái Logout
